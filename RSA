@@ -1,0 +1,143 @@
+ops = raw_input('Would you like a list of prime numbers to choose from (y/n)? ')
+op = ops.upper()
+
+if op == 'Y':
+    print """\n 2      3      5      7     11     13     17     19     23     29 
+31     37     41     43     47     53     59     61     67     71 
+73     79     83     89     97    101    103    107    109    113 
+127    131    137    139    149    151    157    163    167    173 
+179    181    191    193    197    199    211    223    227    229 
+233    239    241    251    257    263    269    271    277    281 
+283    293    307    311    313    317    331    337    347    349 
+353    359    367    373    379    383    389    397    401    409 
+419    421    431    433    439    443    449    457    461    463 
+467    479    487    491    499    503    509    521    523    541 
+547    557    563    569    571    577    587    593    599 \n"""
+    rsa()
+else:
+    print "\n"
+    rsa()
+
+def rsa():
+    # Choose two prime numbers p and q
+    p = raw_input('Choose a p: ')
+    p = int(p)
+
+while isPrime(p) == False:
+    print "Please ensure p is prime"
+    p = raw_input('Choose a p: ')
+    p = int(p)
+
+q = raw_input('Choose a q: ')
+q = int(q)
+
+while isPrime(q) == False or p==q:
+    print "Please ensure q is prime and NOT the same value as p"
+    q = raw_input('Choose a q: ')
+    q = int(q)
+
+# Compute n = pq
+n = p * q
+
+# Compute the phi of n
+phi = (p-1) * (q-1)
+
+# Choose an integer e such that e and phi(n) are coprime
+e = random.randrange(1,phi)
+
+# Use Euclid's Algorithm to verify that e and phi(n) are comprime
+g = euclid(e,phi)
+while(g!=1):
+    e = random.randrange(1,phi)
+    g = euclid(e,phi)
+
+# Use Extended Euclid's Algorithm 
+d = extended_euclid(e,phi)
+
+# Public and Private Key have been generated
+public_key=(e,n)
+private_key=(d,n)
+print "Public Key [E,N]: ", public_key
+print "Private Key [D,N]: ", private_key
+
+# Enter plain text to be encrypted using the Public Key
+sentence = raw_input('Enter plain text: ')
+letters = list(sentence)
+
+cipher = []
+num = ""
+
+# Encrypt the plain text
+for i in range(0,len(letters)):
+    print "Value of ", letters[i], " is ", character[letters[i]]
+
+    c = (character[letters[i]]**e)%n
+    cipher += [c]
+    num += str(c)
+print "Cipher Text is: ", num
+
+plain = []
+sentence = ""
+
+# Decrypt the cipher text    
+for j in range(0,len(cipher)):
+
+    p = (cipher[j]**d)%n
+
+    for key in character.keys():
+        if character[key]==p:
+            plain += [key]
+            sentence += key
+            break
+print "Plain Text is: ", sentence
+
+# Euclid's Algorithm
+def euclid(a, b):
+   if b==0:
+   return a
+else:
+   return euclid(b, a % b)
+
+# Euclid's Extended Algorithm
+def extended_euclid(e,phi):
+    d=0
+    x1=0
+    x2=1
+    y1=1
+    orig_phi = phi
+    tempPhi = phi
+
+while (e>0):
+  temp1 = int(tempPhi/e)
+  temp2 = tempPhi - temp1 * e
+  tempPhi = e
+  e = temp2
+
+  x = x2- temp1* x1
+  y = d - temp1 * y1
+
+  x2 = x1
+  x1 = x
+  d = y1
+  y1 = y
+
+  if tempPhi == 1:
+      d += phi
+      break
+return d
+
+# Checks if n is a prime number
+def isPrime(n):
+   for i in range(2,n):
+    if n%i == 0:
+        return False
+return True
+
+character = {"A":1,"B":2,"C":3,"D":4,"E":5,"F":6,"G":7,"H":8,"I":9,"J":10,
+     "K":11,"L":12,"M":13,"N":14,"O":15,"P":16,"Q":17,"R":18,"S":19,
+     "T":20,"U":21,"V":22,"W":23,"X":24,"Y":25,"Z":26,"a":27,"b":28,
+     "c":29,"d":30,"e":31,"f":32,"g":33,"h":34,"i":35,"j":36,"k":37,
+     "l":38,"m":39,"n":40,"o":41,"p":42,"q":43,"r":44,"s":45,"t":46,
+     "u":47,"v":48,"w":49,"x":50,"y":51,"z":52, " ":53, ".":54, ",":55,
+     "?":56,"/":57,"!":58,"(":59,")":60,"$":61,":":62,";":63,"'":64,"@":65,
+     "#":66,"%":67,"^":68,"&":69,"*":70,"+":71,"-":72,"_":73,"=":74}
